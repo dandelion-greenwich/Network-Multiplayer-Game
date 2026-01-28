@@ -48,6 +48,8 @@ public:
 	FString ServerNameTofind;
 	FName MySessionName;
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+	UPROPERTY(BlueprintReadWrite)
+	FString GameMapPath;
 
 	// Delegates
 	UPROPERTY(BlueprintAssignable)

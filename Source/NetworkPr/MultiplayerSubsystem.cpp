@@ -146,7 +146,14 @@ void UMultiplayerSubsystem::OnCreateSessionComplete(FName SessionName, bool WasS
     // The "?listen" parameter ensures the map opens as a listen server.
     if (WasSuccessful)
     {
-       GetWorld()->ServerTravel("/Game/ThirdPersonMap?listen"); 
+       FString Path = "/Game/Scenes/ThirdPersonMap?listen";
+
+      if (!GameMapPath.IsEmpty())
+      {
+         Path = FString::Printf(TEXT("%s?Listen"), *GameMapPath);
+      }
+       
+       GetWorld()->ServerTravel(Path); 
     }
 }
 
