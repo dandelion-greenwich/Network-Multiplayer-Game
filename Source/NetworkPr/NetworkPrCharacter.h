@@ -20,14 +20,6 @@ UCLASS(config=Game)
 class ANetworkPrCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FollowCamera;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -47,6 +39,15 @@ class ANetworkPrCharacter : public ACharacter
 
 public:
 	ANetworkPrCharacter();
+	//virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
+	FTimerHandle TimerHandle;
+	void SetCamera();
+	
+	// Faster debugging
+	void PrintString(const FString& String);
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_SetCamera(AActor* NewCamera);
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void ServerRPCFunction(int MyArg);
@@ -72,11 +73,5 @@ protected:
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
 
