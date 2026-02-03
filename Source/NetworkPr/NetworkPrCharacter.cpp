@@ -52,8 +52,7 @@ ANetworkPrCharacter::ANetworkPrCharacter()
 void ANetworkPrCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	Attack();
+	
 }
 
 void ANetworkPrCharacter::PrintString(const FString& String) 
@@ -106,25 +105,27 @@ void ANetworkPrCharacter::ClientRPC_SetCamera_Implementation(AActor* NewCamera)
 void ANetworkPrCharacter::Attack()
 {
 	// Parameters for SweepMultiByChannel
-	FVector StartVector = GetActorLocation();
+	FVector StartVector = GetActorLocation() + (GetActorForwardVector() * 60.f );
 	FVector EndVector = StartVector + (GetActorForwardVector() * 500.f);
-	AttackCapsuleRadius = 30.f; // JUST FOR EXAMPLE WILL HAVE TO BE CONFIGURED IN BLUEPRINT
+	AttackCapsuleRadius = 60.f; // JUST FOR EXAMPLE WILL HAVE TO BE CONFIGURED IN BLUEPRINT
 	AttackCapsuleHalfHeight = 90.f;
 	FQuat CapsuleRotation = FQuat::Identity;
-	FCollisionShape Capsule = FCollisionShape::MakeCapsule(AttackCapsuleRadius, AttackCapsuleHalfHeight);
+	FCollisionShape SphereShape = FCollisionShape::MakeSphere(AttackCapsuleRadius);
 	TArray<FHitResult> HitResults;
-
-	DrawDebugCapsule(GetWorld(), StartVector, AttackCapsuleHalfHeight, AttackCapsuleRadius, CapsuleRotation, FColor::Red, false, 2.0f);
-	DrawDebugCapsule(GetWorld(), EndVector, AttackCapsuleHalfHeight, AttackCapsuleRadius, CapsuleRotation, FColor::Green, false, 2.0f);
-	DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Yellow, false, 2.0f);
-	// Checks if any objects are within the radius of a sphere
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.bTraceComplex = false;
+	
+	DrawDebugSphere(GetWorld(), StartVector, AttackCapsuleRadius, 10.f, FColor::Red, false, 2.0f);
+	// Checks if any objects are within the radius of a multicast
 	bool HasHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
 		StartVector,
-		EndVector,
+		StartVector,
 		CapsuleRotation,
 		ECC_Pawn,
-		Capsule);
+		SphereShape,
+		QueryParams);
 	
 	if (!HasHit) 
 		return;
@@ -133,7 +134,6 @@ void ANetworkPrCharacter::Attack()
 	for (auto HitResult : HitResults)
 	{
 		AActor* HitActor = HitResult.GetActor();
-		if (HitActor->ActorHasTag("Player")) continue;
 		UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *HitActor->GetActorNameOrLabel());
 		/*if (HitActor->GetClass()->ImplementsInterface(UIDamagable::StaticClass()))
 		{
@@ -224,8 +224,7 @@ void ANetworkPrCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Move);
 
-		// Looking
-		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Look);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Attack);
 	}
 	else
 	{
