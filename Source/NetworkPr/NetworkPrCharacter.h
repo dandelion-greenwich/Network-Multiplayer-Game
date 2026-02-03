@@ -39,15 +39,19 @@ class ANetworkPrCharacter : public ACharacter
 
 public:
 	ANetworkPrCharacter();
-	//virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void PossessedBy(AController* NewController) override;
-	FTimerHandle TimerHandle;
 	void SetCamera();
-	
-	// Faster debugging
-	void PrintString(const FString& String);
+	void PrintString(const FString& String); // Faster debugging
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_SetCamera(AActor* NewCamera);
+	void Attack();
+	
+	FTimerHandle TimerHandle; // Timer for PC to load
+	UPROPERTY(BlueprintReadWrite)
+	float AttackCapsuleRadius;
+	UPROPERTY(BlueprintReadWrite)
+	float AttackCapsuleHalfHeight;
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void ServerRPCFunction(int MyArg);

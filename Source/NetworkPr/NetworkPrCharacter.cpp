@@ -49,37 +49,18 @@ ANetworkPrCharacter::ANetworkPrCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
 
-/*void ANetworkPrCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	TArray<AActor*> FoundCameras;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("MainCamera"), FoundCameras);
-
-	if (FoundCameras.Num() > 0)
-	{
-		AActor* NewCamera = FoundCameras[0];
-		NewCamera -> SetReplicates(true);
-		
-		ClientRPC_SetCamera(NewCamera);
-	}
-}*/
-
-/*void ANetworkPrCharacter::Tick(float DeltaSeconds)
+void ANetworkPrCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	TArray<AActor*> FoundCameras;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("MainCamera"), FoundCameras);
+	Attack();
+}
 
-	if (FoundCameras.Num() > 0)
-	{
-		AActor* NewCamera = FoundCameras[0];
-		NewCamera -> SetReplicates(true);
-		
-		ClientRPC_SetCamera(NewCamera);
-	}
-}*/
+void ANetworkPrCharacter::PrintString(const FString& String) 
+{
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, String);
+}
 
 void ANetworkPrCharacter::PossessedBy(AController* NewController)
 {
@@ -122,11 +103,46 @@ void ANetworkPrCharacter::ClientRPC_SetCamera_Implementation(AActor* NewCamera)
 	PC->SetViewTarget(NewCamera);
 }
 
-
-void ANetworkPrCharacter::PrintString(const FString& String) 
+void ANetworkPrCharacter::Attack()
 {
-	if(GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, String);
+	// Parameters for SweepMultiByChannel
+	FVector StartVector = GetActorLocation();
+	FVector EndVector = StartVector + (GetActorForwardVector() * 500.f);
+	AttackCapsuleRadius = 30.f; // JUST FOR EXAMPLE WILL HAVE TO BE CONFIGURED IN BLUEPRINT
+	AttackCapsuleHalfHeight = 90.f;
+	FQuat CapsuleRotation = FQuat::Identity;
+	FCollisionShape Capsule = FCollisionShape::MakeCapsule(AttackCapsuleRadius, AttackCapsuleHalfHeight);
+	TArray<FHitResult> HitResults;
+
+	DrawDebugCapsule(GetWorld(), StartVector, AttackCapsuleHalfHeight, AttackCapsuleRadius, CapsuleRotation, FColor::Red, false, 2.0f);
+	DrawDebugCapsule(GetWorld(), EndVector, AttackCapsuleHalfHeight, AttackCapsuleRadius, CapsuleRotation, FColor::Green, false, 2.0f);
+	DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Yellow, false, 2.0f);
+	// Checks if any objects are within the radius of a sphere
+	bool HasHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
+		StartVector,
+		EndVector,
+		CapsuleRotation,
+		ECC_Pawn,
+		Capsule);
+	
+	if (!HasHit) 
+		return;
+	
+	// If has hit successful - apply damage and then destroy blueprint
+	for (auto HitResult : HitResults)
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor->ActorHasTag("Player")) continue;
+		UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *HitActor->GetActorNameOrLabel());
+		/*if (HitActor->GetClass()->ImplementsInterface(UIDamagable::StaticClass()))
+		{
+			FDamageInfo DamageInfo;
+			DamageInfo.DamageAmount = 50.f;
+			DamageInfo.DamageType = EDamageType::Explosion;
+			IIDamagable::Execute_TakeDamage(HitActor, DamageInfo);
+		}*/
+	}
 }
 
 void ANetworkPrCharacter::ServerRPCFunction_Implementation(int MyArg)
@@ -209,7 +225,7 @@ void ANetworkPrCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Move);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Look);
+		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Look);
 	}
 	else
 	{
