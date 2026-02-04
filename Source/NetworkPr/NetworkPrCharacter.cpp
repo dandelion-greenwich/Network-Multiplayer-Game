@@ -149,12 +149,6 @@ void ANetworkPrCharacter::ServerRPCFunction_Implementation(int MyArg)
 {
 	if (!HasAuthority() || !Sphere)
 		return;
-	
-#if 0
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green,
-			TEXT("Server: ServerRPCFunction_Implementation"));
-#endif
 
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = this;
