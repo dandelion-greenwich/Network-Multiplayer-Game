@@ -33,7 +33,7 @@ class ANetworkPrCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
-	/** Attack Input Action */
+	/** ServerRPC_Attack Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* AttackAction;
 
@@ -45,13 +45,12 @@ public:
 	void PrintString(const FString& String); // Faster debugging
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_SetCamera(AActor* NewCamera);
-	void Attack();
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerRPC_Attack();
 	
 	FTimerHandle TimerHandle; // Timer for PC to load
 	UPROPERTY(BlueprintReadWrite)
-	float AttackCapsuleRadius;
-	UPROPERTY(BlueprintReadWrite)
-	float AttackCapsuleHalfHeight;
+	float AttackSphereRadius;
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void ServerRPCFunction(int MyArg);

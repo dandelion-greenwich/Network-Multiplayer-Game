@@ -102,27 +102,26 @@ void ANetworkPrCharacter::ClientRPC_SetCamera_Implementation(AActor* NewCamera)
 	PC->SetViewTarget(NewCamera);
 }
 
-void ANetworkPrCharacter::Attack()
+void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 {
 	// Parameters for SweepMultiByChannel
 	FVector StartVector = GetActorLocation() + (GetActorForwardVector() * 60.f );
 	FVector EndVector = StartVector + (GetActorForwardVector() * 500.f);
-	AttackCapsuleRadius = 60.f; // JUST FOR EXAMPLE WILL HAVE TO BE CONFIGURED IN BLUEPRINT
-	AttackCapsuleHalfHeight = 90.f;
-	FQuat CapsuleRotation = FQuat::Identity;
-	FCollisionShape SphereShape = FCollisionShape::MakeSphere(AttackCapsuleRadius);
+	AttackSphereRadius = 60.f; // JUST FOR EXAMPLE WILL HAVE TO BE CONFIGURED IN BLUEPRINT
+	FQuat SphereRotation = FQuat::Identity;
+	FCollisionShape SphereShape = FCollisionShape::MakeSphere(AttackSphereRadius);
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	QueryParams.bTraceComplex = false;
 	
-	DrawDebugSphere(GetWorld(), StartVector, AttackCapsuleRadius, 10.f, FColor::Red, false, 2.0f);
+	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Red, false, 2.0f);
 	// Checks if any objects are within the radius of a multicast
 	bool HasHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
 		StartVector,
 		StartVector,
-		CapsuleRotation,
+		SphereRotation,
 		ECC_Pawn,
 		SphereShape,
 		QueryParams);
@@ -135,13 +134,14 @@ void ANetworkPrCharacter::Attack()
 	{
 		AActor* HitActor = HitResult.GetActor();
 		UE_LOG(LogTemp, Warning, TEXT("Hit actor: %s"), *HitActor->GetActorNameOrLabel());
-		/*if (HitActor->GetClass()->ImplementsInterface(UIDamagable::StaticClass()))
-		{
-			FDamageInfo DamageInfo;
-			DamageInfo.DamageAmount = 50.f;
-			DamageInfo.DamageType = EDamageType::Explosion;
-			IIDamagable::Execute_TakeDamage(HitActor, DamageInfo);
-		}*/
+
+		if (!HitActor || !HitActor -> ActorHasTag("Player")) continue; // Go to the next iteration of for loop if HitActor is a wall for instance
+
+		ACharacter* Character = Cast<ACharacter>(HitActor);
+		if (!Character) return;
+		FVector LaunchVelocity = GetActorForwardVector() * 1000.f; 
+		LaunchVelocity.Z += 500.f; // Add a little jump
+		Character->LaunchCharacter(LaunchVelocity, true, true);
 	}
 }
 
@@ -224,7 +224,7 @@ void ANetworkPrCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Move);
 
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ANetworkPrCharacter::ServerRPC_Attack);
 	}
 	else
 	{
