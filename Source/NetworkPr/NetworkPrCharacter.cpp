@@ -15,6 +15,7 @@
 #include "Engine/StaticMesh.h"
 #include "Engine/StaticMeshActor.h"
 #include "Kismet/GameplayStatics.h"
+#include "HealthComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -47,6 +48,8 @@ ANetworkPrCharacter::ANetworkPrCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>("Health System");
 }
 
 void ANetworkPrCharacter::Tick(float DeltaSeconds)

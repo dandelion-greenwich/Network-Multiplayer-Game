@@ -51,6 +51,8 @@ public:
 	FTimerHandle TimerHandle; // Timer for PC to load
 	UPROPERTY(BlueprintReadWrite)
 	float AttackSphereRadius;
+	UPROPERTY(VisibleAnywhere)
+	class UHealthComponent* HealthComp;
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void ServerRPCFunction(int MyArg);
@@ -69,10 +71,7 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-			
-
-protected:
-
+	
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
