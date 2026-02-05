@@ -2,6 +2,8 @@
 
 
 #include "MeteorBase.h"
+#include "Engine/StaticMeshActor.h"
+
 
 // Sets default values
 AMeteorBase::AMeteorBase()
@@ -28,20 +30,48 @@ AMeteorBase::AMeteorBase()
 void AMeteorBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TArray<FHitResult> HitResults;
+	FVector Start = GetActorLocation();
+
+	FVector DownVector = -GetActorUpVector();
+	FVector End =  Start + (DownVector * 1000.f);
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 3, 0, 1);
+
+	bool hasHit = GetWorld()->LineTraceMultiByChannel(
+		HitResults,
+		Start,
+		End,
+		ECC_Visibility,
+		CollisionParams);
+
+	if (!hasHit) return;
 	
-}
-
-// Called every frame
-void AMeteorBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	for (auto HitResult : HitResults)
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (!HitActor) continue;
+		UE_LOG(LogTemp, Warning, TEXT("Preview Actor: %s"), *HitActor->GetActorNameOrLabel());
+		
+		if (HitActor && HitActor -> ActorHasTag("Floor"))
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "Spawn Preview");
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.Owner = this;
+			FVector SpawnedLocation = HitResult.Location;
+			PreviewActor = GetWorld()->SpawnActor<AActor>(MeteorClass, SpawnedLocation, FRotator::ZeroRotator, SpawnParameters);
+			break;
+		}
+	}
 }
 
 void AMeteorBase::OnMeteorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	Explosion();
+	Explosion_Implementation();
 }
 
 void AMeteorBase::Explosion_Implementation()
@@ -58,6 +88,7 @@ void AMeteorBase::Explosion_Implementation()
 	QueryParams.bTraceComplex = false;
 	
 	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Orange, false, 2.0f);
+	if (PreviewActor != nullptr) PreviewActor -> Destroy();
 	Destroy();
 }
 

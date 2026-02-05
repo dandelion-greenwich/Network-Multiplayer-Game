@@ -18,46 +18,26 @@ void AMeteorManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Has Authority"));
-	}
-	else if (!HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Doesn't have Authority"));
-	}
-
 	if (!HasAuthority()) return;
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		TimerHandle,                
 		this,                       
 		&AMeteorManager::SpawnMeteor,
-		5.0,                        
+		TimeToSpawn,                        
 		true,                       
 		-1.0);
 }
 
-// Called every frame
-void AMeteorManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void AMeteorManager::SpawnMeteor_Implementation()
 {
-	
 	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Owner = this; 
-	AMeteorBase* SpawnedActor = GetWorld() -> SpawnActor<AMeteorBase>(MeteorBP, GetActorLocation(), GetActorRotation(), SpawnParameters);
+	SpawnParameters.Owner = this;
+	int32 RandX = FMath::RandRange(-RandRange, RandRange);
+	int32 RandY = FMath::RandRange(-RandRange, RandRange);
+	FVector CurrentLocation = GetActorLocation();
+	FVector SpawnLocation(CurrentLocation.X + RandX, CurrentLocation.Y + RandY, CurrentLocation.Z);
 	
-	/*GetWorld()->GetTimerManager().SetTimer(
-	TimerHandle,                
-	this,                       
-	&AMeteorManager::SpawnMeteor,
-	5.0,                        
-	true,                       
-	1.0);*/
+	AMeteorBase* SpawnedActor = GetWorld() -> SpawnActor<AMeteorBase>(MeteorBP, SpawnLocation, GetActorRotation(), SpawnParameters);
 }
 

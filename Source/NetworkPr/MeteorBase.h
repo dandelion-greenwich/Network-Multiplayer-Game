@@ -20,15 +20,18 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	// Hierarchy components:
 	class USceneComponent* RootComp;
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* MeteorComp;
+
+	// Supportive variables
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> MeteorClass;
+	AActor* PreviewActor;
+	
 	UFUNCTION()
 	void OnMeteorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Explosion();
-
 };
