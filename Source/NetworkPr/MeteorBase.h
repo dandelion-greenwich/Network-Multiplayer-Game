@@ -28,7 +28,9 @@ public:
 	// Supportive variables
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> MeteorClass;
-	AActor* PreviewActor;
+	UPROPERTY(EditAnywhere)
+	float AttackSphereRadius;
+	AActor* PreviewActorToDestroy;
 	
 	UFUNCTION()
 	void OnMeteorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

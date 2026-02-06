@@ -54,15 +54,13 @@ void AMeteorBase::BeginPlay()
 	{
 		AActor* HitActor = HitResult.GetActor();
 		if (!HitActor) continue;
-		UE_LOG(LogTemp, Warning, TEXT("Preview Actor: %s"), *HitActor->GetActorNameOrLabel());
 		
 		if (HitActor && HitActor -> ActorHasTag("Floor"))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "Spawn Preview");
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.Owner = this;
 			FVector SpawnedLocation = HitResult.Location;
-			PreviewActor = GetWorld()->SpawnActor<AActor>(MeteorClass, SpawnedLocation, FRotator::ZeroRotator, SpawnParameters);
+			PreviewActorToDestroy = GetWorld()->SpawnActor<AActor>(MeteorClass, SpawnedLocation, FRotator::ZeroRotator, SpawnParameters);
 			break;
 		}
 	}
@@ -76,10 +74,7 @@ void AMeteorBase::OnMeteorHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 void AMeteorBase::Explosion_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "OnMeteorHit");
-	
 	FVector StartVector = MeteorComp -> GetComponentLocation();
-	float AttackSphereRadius = 100.f; // JUST FOR EXAMPLE WILL HAVE TO BE CONFIGURED IN BLUEPRINT
 	FQuat SphereRotation = FQuat::Identity;
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(AttackSphereRadius);
 	TArray<FHitResult> HitResults;
@@ -88,7 +83,7 @@ void AMeteorBase::Explosion_Implementation()
 	QueryParams.bTraceComplex = false;
 	
 	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Orange, false, 2.0f);
-	if (PreviewActor != nullptr) PreviewActor -> Destroy();
+	if (PreviewActorToDestroy != nullptr) PreviewActorToDestroy -> Destroy();
 	Destroy();
 }
 

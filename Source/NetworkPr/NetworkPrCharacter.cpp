@@ -58,6 +58,13 @@ void ANetworkPrCharacter::Tick(float DeltaSeconds)
 	
 }
 
+void ANetworkPrCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	RespawnPos = GetActorLocation();
+}
+
 void ANetworkPrCharacter::PrintString(const FString& String) 
 {
 	if(GEngine)
@@ -146,6 +153,11 @@ void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 		LaunchVelocity.Z += 500.f; // Add a little jump
 		Character->LaunchCharacter(LaunchVelocity, true, true);
 	}
+}
+
+void ANetworkPrCharacter::RespawnPlayer()
+{
+	SetActorLocation(RespawnPos);
 }
 
 void ANetworkPrCharacter::ServerRPCFunction_Implementation(int MyArg)

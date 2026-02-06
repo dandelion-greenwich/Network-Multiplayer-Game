@@ -40,6 +40,7 @@ class ANetworkPrCharacter : public ACharacter
 public:
 	ANetworkPrCharacter();
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	void SetCamera();
 	void PrintString(const FString& String); // Faster debugging
@@ -47,12 +48,14 @@ public:
 	void ClientRPC_SetCamera(AActor* NewCamera);
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerRPC_Attack();
+	void RespawnPlayer();
 	
 	FTimerHandle TimerHandle; // Timer for PC to load
 	UPROPERTY(BlueprintReadWrite)
 	float AttackSphereRadius;
 	UPROPERTY(VisibleAnywhere)
 	class UHealthComponent* HealthComp;
+	FVector RespawnPos;
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void ServerRPCFunction(int MyArg);
