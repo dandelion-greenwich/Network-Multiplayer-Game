@@ -2,7 +2,9 @@
 
 
 #include "MeteorBase.h"
-#include "Engine/StaticMeshActor.h"
+
+#include "HealthComponent.h"
+#include "Engine/OverlapResult.h"
 
 
 // Sets default values
@@ -77,10 +79,33 @@ void AMeteorBase::Explosion_Implementation()
 	FVector StartVector = MeteorComp -> GetComponentLocation();
 	FQuat SphereRotation = FQuat::Identity;
 	FCollisionShape SphereShape = FCollisionShape::MakeSphere(AttackSphereRadius);
-	TArray<FHitResult> HitResults;
+	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 	QueryParams.bTraceComplex = false;
+
+	bool bHasOverlap = GetWorld()->OverlapMultiByChannel(
+		OverlapResults,
+		StartVector,
+		FQuat::Identity,
+		ECC_Pawn,
+		SphereShape,
+		QueryParams
+	);
+
+	if (bHasOverlap)
+	{
+		for (auto OverlapResult : OverlapResults)
+		{
+			AActor* HitActor = OverlapResult.GetActor();
+			UE_LOG(LogTemp, Warning, TEXT("Explosion Hit actor: %s"), *HitActor->GetActorNameOrLabel());
+			if (!HitActor || !HitActor -> ActorHasTag("Player")) continue; // Go to the next iteration of for loop if HitActor is a wall for instance
+
+			UHealthComponent* HealthComp = HitActor -> FindComponentByClass<UHealthComponent>();
+			if (!HealthComp) continue;
+			HealthComp -> TakeDamage(0.5f);
+		}
+	}
 	
 	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Orange, false, 2.0f);
 	if (PreviewActorToDestroy != nullptr) PreviewActorToDestroy -> Destroy();

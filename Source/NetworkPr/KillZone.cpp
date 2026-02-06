@@ -3,6 +3,7 @@
 
 #include "KillZone.h"
 #include "NetworkPrCharacter.h"
+#include "HealthComponent.h"
 
 // Sets default values
 AKillZone::AKillZone()
@@ -42,5 +43,8 @@ void AKillZone::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	
 	ANetworkPrCharacter* MyCharacter = Cast<ANetworkPrCharacter>(OtherActor);
 	if (MyCharacter) MyCharacter -> RespawnPlayer();
+
+	UHealthComponent* HealthComp = OtherActor -> FindComponentByClass<UHealthComponent>();
+	if (HealthComp) HealthComp -> TakeDamage(1.0f);
 }
 
