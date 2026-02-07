@@ -4,7 +4,7 @@
 #include "NetworkPrCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
-ANetworkPrGameMode::ANetworkPrGameMode()
+ANetworkPrGameMode:: ANetworkPrGameMode()
 {
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));

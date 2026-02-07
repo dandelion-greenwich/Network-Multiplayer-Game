@@ -21,7 +21,7 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CurrentHealth = MaxHearts;
+	CurrentHealth = MaxHealth;
 }
 
 
@@ -58,10 +58,10 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UHealthComponent::OnRep_Health()
 {
-	// TODO: Broadcast an event related to updating UI
+	OnHealthChanged.Broadcast(CurrentHealth);
 	if (CurrentHealth <= 0.0f)
 	{
-		// TODO: Broadcast an event related to updating State
+		OnDeath.Broadcast(GetOwner());
 	}
 }
 

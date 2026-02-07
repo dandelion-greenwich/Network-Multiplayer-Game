@@ -7,27 +7,31 @@
 #include "HealthComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, CurrentHealth);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class NETWORKPR_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UHealthComponent();
 
 protected:
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	int32 MaxHearts;
+	int32 MaxHealth;
 	UPROPERTY(ReplicatedUsing=OnRep_Health, EditAnywhere, Category = "Health")
 	float CurrentHealth;
+
+	// Events:
+	FOnHealthChanged OnHealthChanged;
+	FOnDeath OnDeath;
 	
 	UFUNCTION(BlueprintCallable)
 	void TakeDamage(float DamageAmount);
