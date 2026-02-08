@@ -7,7 +7,7 @@ UMultiplayerSubsystem::UMultiplayerSubsystem()
     CreateServerAfterDestroy = false;
     DestroyServerName = "";
     ServerNameTofind = "";
-    MySessionName = FName("ALT_F5_UE Session Name"); // TODO: WRITE A PROPER SESSION
+    MySessionName = FName("NetworkPr Session Name"); // TODO: WRITE A PROPER SESSION
     
     OnlineSubSystem = nullptr;
 }

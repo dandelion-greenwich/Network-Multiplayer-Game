@@ -11,10 +11,8 @@ void UPlayerUI::NativeConstruct()
 
     ANetworkPrCharacter* MyChar = Cast<ANetworkPrCharacter>(GetOwningPlayerPawn());
     if (MyChar && MyChar->HealthComp)
-    {
         MyChar->HealthComp->OnHealthChanged.AddDynamic(this, &UPlayerUI::UpdateHealth);
-        UpdateHealth(MyChar->HealthComp->CurrentHealth);
-    }
+    
 
 }
 
