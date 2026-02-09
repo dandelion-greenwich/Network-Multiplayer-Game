@@ -22,7 +22,14 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UUserWidget> PlayerWidgetClass;
-	
 	UPlayerUI* PlayerWidgetReference;
+
+	FTimerHandle InitTimerHandle;
+
+	bool bP1Bound = false;
+	bool bP2Bound = false;
+
+	UFUNCTION()
+	void TryInitialiseUI();
 	
 };

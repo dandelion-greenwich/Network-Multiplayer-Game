@@ -22,7 +22,7 @@ void UHealthComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	CurrentHealth = MaxHealth;
-	OnHealthChanged.Broadcast(CurrentHealth);
+	OnHealthChanged.Broadcast(GetOwner(), CurrentHealth);
 }
 
 
@@ -59,7 +59,7 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UHealthComponent::OnRep_Health()
 {
-	OnHealthChanged.Broadcast(CurrentHealth);
+	OnHealthChanged.Broadcast(GetOwner(), CurrentHealth);
 	if (CurrentHealth <= 0.0f)
 	{
 		OnDeath.Broadcast(GetOwner());

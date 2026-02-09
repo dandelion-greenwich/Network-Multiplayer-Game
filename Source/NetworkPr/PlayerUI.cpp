@@ -4,22 +4,21 @@
 #include "PlayerUI.h"
 #include "NetworkPrCharacter.h"
 #include "HealthComponent.h"
+#include "NetworkPrGameState.h"
+#include "GameFramework/GameSession.h"
 
-void UPlayerUI::NativeConstruct()
+void UPlayerUI::UpdateHealth(AActor* Player, float NewHealth)
 {
-    Super::NativeConstruct();
+    // 1. Get GameState to check who is who
+    ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
+    if (!GS) return;
 
-    ANetworkPrCharacter* MyChar = Cast<ANetworkPrCharacter>(GetOwningPlayerPawn());
-    if (MyChar && MyChar->HealthComp)
-        MyChar->HealthComp->OnHealthChanged.AddDynamic(this, &UPlayerUI::UpdateHealth);
-    
-
-}
-
-void UPlayerUI::UpdateHealth(float CurrentHealth)
-{
-    if (CurrentHealthText)
+    if (Player == GS->Player1)
     {
-        CurrentHealthText->SetText(FText::AsNumber(CurrentHealth));
+        if (Player1Health) Player1Health->SetText(FText::AsNumber(NewHealth));
+    }
+    else if (Player == GS->Player2)
+    {
+        if (Player2Health) Player2Health->SetText(FText::AsNumber(NewHealth));
     }
 }

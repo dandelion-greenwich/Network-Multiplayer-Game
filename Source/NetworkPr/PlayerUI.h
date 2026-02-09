@@ -19,11 +19,10 @@ public:
 	// The meta tag for a widget in the Blueprint needs to be named EXACTLY
     // If it's named differently, the game will crash
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* CurrentHealthText;
-
-	virtual void NativeConstruct() override;
-
-	UFUNCTION(BlueprintCallable) // Make it callable just in case
-	void UpdateHealth(float CurrentHealth);
+	UTextBlock* Player1Health;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* Player2Health;
 	
+	UFUNCTION(BlueprintCallable) // Made it callable just in case
+	void UpdateHealth(AActor* Player, float NewHealth);
 };

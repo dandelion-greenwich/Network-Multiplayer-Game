@@ -16,6 +16,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "HealthComponent.h"
+#include "NetworkPrGameState.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -63,6 +64,14 @@ void ANetworkPrCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	RespawnPos = GetActorLocation();
+	if (HasAuthority())
+	{
+		ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
+		if (GS)
+		{
+			GS->RegisterPlayer(this);
+		}
+	}
 }
 
 void ANetworkPrCharacter::PrintString(const FString& String) 

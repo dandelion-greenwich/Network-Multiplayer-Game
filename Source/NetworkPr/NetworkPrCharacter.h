@@ -61,6 +61,7 @@ public:
 	void ServerRPCFunction(int MyArg);
 	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void ClientRPCFunction();
+	void DENJI();
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* Sphere;
 	UPROPERTY(EditAnywhere)
