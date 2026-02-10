@@ -2,6 +2,7 @@
 
 
 #include "MeteorManager.h"
+#include "ArcadeGameMode.h"
 #include "MeteorBase.h"
 
 // Sets default values
@@ -18,6 +19,17 @@ void AMeteorManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!HasAuthority()) return;
+
+	AArcadeGameMode* GM = GetWorld()->GetAuthGameMode<AArcadeGameMode>();
+	if (GM)
+		GM -> OnStartMatch.AddDynamic(this, &AMeteorManager::SpawnMeteorTimer);
+	else
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "Game Mode in meteor manager is null");
+}
+
+void AMeteorManager::SpawnMeteorTimer()
+{
 	if (!HasAuthority()) return;
 	
 	GetWorld()->GetTimerManager().SetTimer(

@@ -100,7 +100,6 @@ void ANetworkPrCharacter::SetCamera()
 	if (FoundCameras.Num() > 0)
 	{
 		AActor* NewCamera = FoundCameras[0];
-		PrintString("Camera found");
 		ClientRPC_SetCamera(NewCamera);
 	}
 	else

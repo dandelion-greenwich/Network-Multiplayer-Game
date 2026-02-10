@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "NetworkPrGameMode.generated.h"
 
+
 UCLASS(minimalapi)
 class ANetworkPrGameMode : public AGameModeBase
 {
@@ -13,6 +14,7 @@ class ANetworkPrGameMode : public AGameModeBase
 
 public:
 	ANetworkPrGameMode();
+
 };
 
 

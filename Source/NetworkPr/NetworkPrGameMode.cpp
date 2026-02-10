@@ -2,6 +2,7 @@
 
 #include "NetworkPrGameMode.h"
 #include "NetworkPrCharacter.h"
+#include "NetworkPrGameState.h"
 #include "UObject/ConstructorHelpers.h"
 
 ANetworkPrGameMode:: ANetworkPrGameMode()

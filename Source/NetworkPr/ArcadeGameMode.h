@@ -6,12 +6,18 @@
 #include "GameFramework/GameModeBase.h"
 #include "ArcadeGameMode.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartMatch);
+
 UCLASS()
 class NETWORKPR_API AArcadeGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	virtual void OnPostLogin(AController* NewPlayer) override;
+	void TryToStartMatch();
+
+	FTimerHandle TimerHandle;
+
+	FOnStartMatch OnStartMatch;
 };

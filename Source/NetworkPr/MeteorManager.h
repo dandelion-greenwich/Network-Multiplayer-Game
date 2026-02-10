@@ -32,4 +32,6 @@ public:
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SpawnMeteor();
+	UFUNCTION()
+	void SpawnMeteorTimer();
 };
