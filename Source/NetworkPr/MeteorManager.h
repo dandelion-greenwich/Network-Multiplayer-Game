@@ -27,6 +27,8 @@ public:
 	int32 RandRange;
 	UPROPERTY(EditAnywhere)
 	float TimeToSpawn;
+	UPROPERTY(EditAnywhere)
+	float ExplosionRadius;
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SpawnMeteor();

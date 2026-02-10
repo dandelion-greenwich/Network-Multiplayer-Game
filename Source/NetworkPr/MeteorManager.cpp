@@ -39,5 +39,6 @@ void AMeteorManager::SpawnMeteor_Implementation()
 	FVector SpawnLocation(CurrentLocation.X + RandX, CurrentLocation.Y + RandY, CurrentLocation.Z);
 	
 	AMeteorBase* SpawnedActor = GetWorld() -> SpawnActor<AMeteorBase>(MeteorBP, SpawnLocation, GetActorRotation(), SpawnParameters);
+	SpawnedActor -> AttackSphereRadius = ExplosionRadius;
 }
 

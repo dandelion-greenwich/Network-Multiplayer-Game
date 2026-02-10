@@ -103,7 +103,12 @@ void AMeteorBase::Explosion_Implementation()
 
 			UHealthComponent* HealthComp = HitActor -> FindComponentByClass<UHealthComponent>();
 			if (!HealthComp) continue;
-			HealthComp -> TakeDamage(0.5f);
+			float DistanceDifference = FVector::Dist(StartVector, HitActor->GetActorLocation());
+
+			if (DistanceDifference > AttackSphereRadius / 2)
+				HealthComp -> TakeDamage(0.25f);
+			else
+				HealthComp -> TakeDamage(0.5f);
 		}
 	}
 	

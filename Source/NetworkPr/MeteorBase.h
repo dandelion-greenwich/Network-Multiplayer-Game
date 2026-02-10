@@ -28,7 +28,6 @@ public:
 	// Supportive variables
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> MeteorClass;
-	UPROPERTY(EditAnywhere)
 	float AttackSphereRadius;
 	AActor* PreviewActorToDestroy;
 	
