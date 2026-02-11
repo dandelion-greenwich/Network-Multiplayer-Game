@@ -71,10 +71,10 @@ void AMeteorBase::BeginPlay()
 void AMeteorBase::OnMeteorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	Explosion_Implementation();
+	ServerRPC_Explosion_Implementation();
 }
 
-void AMeteorBase::Explosion_Implementation()
+void AMeteorBase::ServerRPC_Explosion_Implementation()
 {
 	FVector StartVector = MeteorComp -> GetComponentLocation();
 	FQuat SphereRotation = FQuat::Identity;

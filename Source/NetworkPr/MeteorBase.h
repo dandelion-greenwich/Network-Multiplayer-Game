@@ -34,5 +34,5 @@ public:
 	UFUNCTION()
 	void OnMeteorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void Explosion();
+	void ServerRPC_Explosion();
 };

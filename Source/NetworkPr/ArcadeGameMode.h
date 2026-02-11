@@ -15,6 +15,7 @@ class NETWORKPR_API AArcadeGameMode : public AGameModeBase
 
 public:
 	virtual void OnPostLogin(AController* NewPlayer) override;
+	virtual void Logout(AController* Exiting) override;
 	void TryToStartMatch();
 
 	FTimerHandle TimerHandle;
