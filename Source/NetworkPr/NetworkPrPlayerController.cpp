@@ -63,3 +63,11 @@ void ANetworkPrPlayerController::TryInitialiseUI()
 		GetWorldTimerManager().ClearTimer(InitTimerHandle);
 	}
 }
+
+void ANetworkPrPlayerController::ClientRPC_SetWaitingText_Implementation()
+{
+	if (PlayerWidgetReference)
+		PlayerWidgetReference-> RemoveWaitingText();
+	else
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "PlayerWidgetReference is null in player controller");
+}

@@ -22,7 +22,10 @@ public:
 	UTextBlock* Player1Health;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Player2Health;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* WaitingForSecondPlayerText;
 	
 	UFUNCTION(BlueprintCallable) // Made it callable just in case
 	void UpdateHealth(AActor* Player, float NewHealth);
+	void RemoveWaitingText();
 };

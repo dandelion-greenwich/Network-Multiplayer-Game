@@ -15,10 +15,21 @@ void UPlayerUI::UpdateHealth(AActor* Player, float NewHealth)
 
     if (Player == GS->Player1)
     {
-        if (Player1Health) Player1Health->SetText(FText::AsNumber(NewHealth));
+        FText Player1HealthText = FText::Format(
+    FText::FromString("Player 1 Hearts: {0}"), FText::AsNumber(NewHealth));
+        
+        if (Player1Health) Player1Health->SetText(Player1HealthText);
     }
     else if (Player == GS->Player2)
     {
-        if (Player2Health) Player2Health->SetText(FText::AsNumber(NewHealth));
+        FText Player2HealthText = FText::Format(
+            FText::FromString("Player 2 Hearts: {0}"), FText::AsNumber(NewHealth));
+
+        if (Player2Health) Player2Health->SetText(Player2HealthText);
     }
+}
+
+void UPlayerUI::RemoveWaitingText()
+{
+    WaitingForSecondPlayerText->SetText(FText::FromString(""));
 }

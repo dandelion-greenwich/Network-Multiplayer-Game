@@ -17,6 +17,8 @@ class NETWORKPR_API ANetworkPrGameState : public AGameStateBase
 	
 public:
 
+	FTimerHandle TimerHandle;
+
 	UPROPERTY(Replicated)
 	ANetworkPrCharacter* Player1;
 	UPROPERTY(Replicated)
@@ -24,6 +26,7 @@ public:
 
 	// Helper to register players (server only)
 	void RegisterPlayer(ANetworkPrCharacter* NewPlayer);
+	void TimerToLoadPCToRemoveWaitingUI();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

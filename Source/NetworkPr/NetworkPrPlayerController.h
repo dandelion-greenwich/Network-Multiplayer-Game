@@ -31,5 +31,7 @@ public:
 
 	UFUNCTION()
 	void TryInitialiseUI();
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_SetWaitingText();
 	
 };
