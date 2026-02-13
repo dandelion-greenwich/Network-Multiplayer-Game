@@ -49,6 +49,7 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerRPC_Attack();
 	void RespawnPlayer();
+	void ResetPush();
 	
 	FTimerHandle TimerHandle; // Timer for PC to load
 	UPROPERTY(BlueprintReadWrite)
@@ -56,12 +57,14 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UHealthComponent* HealthComp;
 	FVector RespawnPos;
+	bool CanPush;
+	UPROPERTY(EditAnywhere)
+	float PushResetTime;
 
 	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
 	void ServerRPCFunction(int MyArg);
 	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void ClientRPCFunction();
-	void DENJI();
 	UPROPERTY(EditAnywhere)
 	UStaticMesh* Sphere;
 	UPROPERTY(EditAnywhere)

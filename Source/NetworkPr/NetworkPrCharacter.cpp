@@ -51,6 +51,7 @@ ANetworkPrCharacter::ANetworkPrCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>("Health System");
+	CanPush = true;
 }
 
 void ANetworkPrCharacter::Tick(float DeltaSeconds)
@@ -88,7 +89,7 @@ void ANetworkPrCharacter::PossessedBy(AController* NewController)
 		TimerHandle,
 		this,
 		&ANetworkPrCharacter::SetCamera,
-		0.5,false);
+		0.2,false);
 }
 
 
@@ -106,6 +107,8 @@ void ANetworkPrCharacter::SetCamera()
 	{
 		PrintString("No camera found");
 	}
+
+	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 
 void ANetworkPrCharacter::ClientRPC_SetCamera_Implementation(AActor* NewCamera)
@@ -122,6 +125,17 @@ void ANetworkPrCharacter::ClientRPC_SetCamera_Implementation(AActor* NewCamera)
 
 void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 {
+	if (!CanPush) return;
+	CanPush = false;
+
+	GetWorld()->GetTimerManager().SetTimer(
+	TimerHandle,                
+	this,                       
+	&ANetworkPrCharacter::ResetPush,
+	0.75,                        
+	false,                       
+	-1.0);
+	
 	// Parameters for SweepMultiByChannel
 	FVector StartVector = GetActorLocation() + (GetActorForwardVector() * 60.f );
 	FVector EndVector = StartVector + (GetActorForwardVector() * 500.f);
@@ -166,6 +180,11 @@ void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 void ANetworkPrCharacter::RespawnPlayer()
 {
 	SetActorLocation(RespawnPos);
+}
+
+void ANetworkPrCharacter::ResetPush()
+{
+	CanPush = true;
 }
 
 void ANetworkPrCharacter::ServerRPCFunction_Implementation(int MyArg)
