@@ -2,6 +2,8 @@
 
 
 #include "HealthComponent.h"
+
+#include "ArcadeGameMode.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -63,6 +65,8 @@ void UHealthComponent::OnRep_Health()
 	if (CurrentHealth <= 0.0f)
 	{
 		OnDeath.Broadcast(GetOwner());
+		AArcadeGameMode* GM = GetWorld()->GetAuthGameMode<AArcadeGameMode>();
+		if (GM) GM->GameOver();
 	}
 }
 

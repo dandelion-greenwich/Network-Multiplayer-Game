@@ -5,6 +5,7 @@
 
 #include "MultiplayerSubsystem.h"
 #include "NetworkPrGameState.h"
+#include "Kismet/GameplayStatics.h"
 
 void AArcadeGameMode::OnPostLogin(AController* NewPlayer)
 {
@@ -45,4 +46,15 @@ void AArcadeGameMode::TryToStartMatch()
 	if (GS && GS->Player1 && GS->Player2)
 		OnStartMatch.Broadcast();
 }
+
+void AArcadeGameMode::GameOver()
+{
+	ANetworkPrGameState* GS = GetGameState<ANetworkPrGameState>();
+	if (GS)
+	{
+		GS->Multicast_GameOver();
+	}
+}
+
+
 

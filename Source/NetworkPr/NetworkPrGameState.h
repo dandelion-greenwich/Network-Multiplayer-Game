@@ -27,6 +27,9 @@ public:
 	// Helper to register players (server only)
 	void RegisterPlayer(ANetworkPrCharacter* NewPlayer);
 	void TimerToLoadPCToRemoveWaitingUI();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_GameOver();
+	void GameOverTimer();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

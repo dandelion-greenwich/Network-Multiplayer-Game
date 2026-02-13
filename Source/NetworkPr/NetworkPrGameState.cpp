@@ -3,6 +3,7 @@
 #include "NetworkPrGameState.h"
 
 #include "NetworkPrPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 void ANetworkPrGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -48,4 +49,22 @@ void ANetworkPrGameState::TimerToLoadPCToRemoveWaitingUI()
 		PC2->ClientRPC_SetWaitingText();
 	else
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "PC of Player 2 is null in GameState");
+
+	GetWorldTimerManager().ClearTimer(TimerHandle);
+}
+
+void ANetworkPrGameState::Multicast_GameOver_Implementation()
+{
+	GetWorld()->GetTimerManager().SetTimer(
+	TimerHandle,                
+	this,                       
+	&ANetworkPrGameState::GameOverTimer,
+	0.2,                        
+	false,                       
+	-1.0);
+}
+
+void ANetworkPrGameState::GameOverTimer()
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.0f);
 }

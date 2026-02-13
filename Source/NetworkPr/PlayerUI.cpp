@@ -9,7 +9,6 @@
 
 void UPlayerUI::UpdateHealth(AActor* Player, float NewHealth)
 {
-    // 1. Get GameState to check who is who
     ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
     if (!GS) return;
 
@@ -31,5 +30,17 @@ void UPlayerUI::UpdateHealth(AActor* Player, float NewHealth)
 
 void UPlayerUI::RemoveWaitingText()
 {
-    WaitingForSecondPlayerText->SetText(FText::FromString(""));
+    WaitingForSecondPlayerText->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UPlayerUI::SetGameOverText(AActor* DeadPlayer)
+{
+    ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
+    if (!DeadPlayer || !GS) return;
+
+    if (DeadPlayer == GS->Player1)
+        GameOverText->SetText(FText::FromString("Player 2 win!!!"));
+    else if (DeadPlayer == GS->Player2)
+        GameOverText->SetText(FText::FromString("Player 1 win!!!"));
+
 }

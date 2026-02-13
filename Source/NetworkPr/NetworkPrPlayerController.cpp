@@ -30,7 +30,6 @@ if (IsLocalPlayerController() && PlayerWidgetClass)
 
 void ANetworkPrPlayerController::TryInitialiseUI()
 {
-	
     ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
     
     if (!GS || !PlayerWidgetReference) return;
@@ -41,6 +40,8 @@ void ANetworkPrPlayerController::TryInitialiseUI()
 		if (HealthComp)
 		{
 			HealthComp->OnHealthChanged.AddDynamic(PlayerWidgetReference, &UPlayerUI::UpdateHealth);
+			HealthComp->OnDeath.AddDynamic(PlayerWidgetReference, &UPlayerUI::SetGameOverText);
+			
 			PlayerWidgetReference->UpdateHealth(GS->Player1, HealthComp->CurrentHealth);
 			bP1Bound = true;
 		}
@@ -53,15 +54,16 @@ void ANetworkPrPlayerController::TryInitialiseUI()
 		if (HealthComp)
 		{
 			HealthComp->OnHealthChanged.AddDynamic(PlayerWidgetReference, &UPlayerUI::UpdateHealth);
+			HealthComp->OnDeath.AddDynamic(PlayerWidgetReference, &UPlayerUI::SetGameOverText);
+			
 			PlayerWidgetReference->UpdateHealth(GS->Player2, HealthComp->CurrentHealth);
 			bP2Bound = true;
 		}
 	}
 
 	if (bP1Bound && bP2Bound)
-	{
 		GetWorldTimerManager().ClearTimer(InitTimerHandle);
-	}
+	
 }
 
 void ANetworkPrPlayerController::ClientRPC_SetWaitingText_Implementation()
