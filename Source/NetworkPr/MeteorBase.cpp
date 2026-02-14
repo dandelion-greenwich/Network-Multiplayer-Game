@@ -106,9 +106,9 @@ void AMeteorBase::ServerRPC_Explosion_Implementation()
 			float DistanceDifference = FVector::Dist(StartVector, HitActor->GetActorLocation());
 
 			if (DistanceDifference > AttackSphereRadius / 2)
-				HealthComp -> TakeDamage(0.25f);
+				HealthComp -> TakeDamage(0.25f, EDamageType::Explosion);
 			else
-				HealthComp -> TakeDamage(0.5f);
+				HealthComp -> TakeDamage(0.5f, EDamageType::Explosion);
 		}
 	}
 	

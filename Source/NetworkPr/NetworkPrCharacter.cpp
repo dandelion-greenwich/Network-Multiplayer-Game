@@ -132,7 +132,7 @@ void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 	TimerHandle,                
 	this,                       
 	&ANetworkPrCharacter::ResetPush,
-	0.75,                        
+	PushResetTime,                        
 	false,                       
 	-1.0);
 	
@@ -148,6 +148,7 @@ void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 	QueryParams.bTraceComplex = false;
 	
 	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Red, false, 2.0f);
+	
 	// Checks if any objects are within the radius of a multicast
 	bool HasHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
@@ -160,8 +161,7 @@ void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 	
 	if (!HasHit) 
 		return;
-	
-	// If has hit successful - apply damage and then destroy blueprint
+
 	for (auto HitResult : HitResults)
 	{
 		AActor* HitActor = HitResult.GetActor();
@@ -169,8 +169,9 @@ void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 
 		if (!HitActor || !HitActor -> ActorHasTag("Player")) continue; // Go to the next iteration of for loop if HitActor is a wall for instance
 
-		ACharacter* Character = Cast<ACharacter>(HitActor);
-		if (!Character) return;
+		ANetworkPrCharacter* Character = Cast<ANetworkPrCharacter>(HitActor);
+		if (!Character || Character->HealthComp->bIsInvincible) continue;
+		
 		FVector LaunchVelocity = GetActorForwardVector() * 1000.f; 
 		LaunchVelocity.Z += 500.f; // Add a little jump
 		Character->LaunchCharacter(LaunchVelocity, true, true);
@@ -185,50 +186,6 @@ void ANetworkPrCharacter::RespawnPlayer()
 void ANetworkPrCharacter::ResetPush()
 {
 	CanPush = true;
-}
-
-void ANetworkPrCharacter::ServerRPCFunction_Implementation(int MyArg)
-{
-	if (!HasAuthority() || !Sphere)
-		return;
-
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.Owner = this;
-	AStaticMeshActor* StaticMeshActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnParameters);
-	if (StaticMeshActor)
-	{
-		StaticMeshActor->SetReplicates(true);
-		StaticMeshActor->SetReplicateMovement(true);
-		StaticMeshActor->SetMobility(EComponentMobility::Movable);
-		FVector SpawnLocation = GetActorLocation() + GetActorRotation().Vector() * 200.0f + GetActorUpVector() * 150.0f;
-		StaticMeshActor->SetActorLocation(SpawnLocation);
-
-		UStaticMeshComponent* StaticMeshComponent = StaticMeshActor->GetStaticMeshComponent();
-		if (StaticMeshComponent)
-		{
-			StaticMeshComponent->SetIsReplicated(true);
-			StaticMeshComponent->SetSimulatePhysics(true);
-			StaticMeshComponent->SetStaticMesh(Sphere);
-		}
-	}
-}
-
-void ANetworkPrCharacter::ClientRPCFunction_Implementation()
-{
-	if (NiagaraSystem)
-	{
-		FVector NewLocation = GetActorLocation();
-		UNiagaraComponent* NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NiagaraSystem, NewLocation,
-			FRotator::ZeroRotator, FVector(1), true, true, ENCPoolMethod::AutoRelease);
-	}
-
-}
-
-bool ANetworkPrCharacter::ServerRPCFunction_Validate(int MyArg)
-{
-	if (MyArg >= 0 && MyArg <= 100)
-		return true;
-	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////

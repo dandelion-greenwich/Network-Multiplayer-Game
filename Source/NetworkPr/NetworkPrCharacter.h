@@ -61,16 +61,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	float PushResetTime;
 
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable)
-	void ServerRPCFunction(int MyArg);
-	UFUNCTION(Client, Reliable, BlueprintCallable)
-	void ClientRPCFunction();
-	UPROPERTY(EditAnywhere)
-	UStaticMesh* Sphere;
-	UPROPERTY(EditAnywhere)
-	UNiagaraSystem* NiagaraSystem;
-	
-
 protected:
 
 	/** Called for movement input */

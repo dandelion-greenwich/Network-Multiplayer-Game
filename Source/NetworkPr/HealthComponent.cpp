@@ -15,6 +15,7 @@ UHealthComponent::UHealthComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	SetIsReplicatedByDefault(true);
+	bIsInvincible = false;
 }
 
 
@@ -35,9 +36,9 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	
 }
 
-void UHealthComponent::TakeDamage(float DamageAmount)
+void UHealthComponent::TakeDamage(float DamageAmount, EDamageType DamageType)
 {
-	if (!GetOwner()->HasAuthority() || CurrentHealth <= 0.0f) return;
+	if (!GetOwner()->HasAuthority() || CurrentHealth <= 0.0f || bIsInvincible) return;
 
 	// Break CurrentHealth into to variables to not deal damage to the next heart
 	float WholeHearts = FMath::FloorToFloat(CurrentHealth);
@@ -47,9 +48,15 @@ void UHealthComponent::TakeDamage(float DamageAmount)
 		WholeHearts -= 1.0f;
 		Fragment = 1.0f;
 	}
-
 	float NewFragment = FMath::Clamp(Fragment - DamageAmount, 0.0f, 1.0f);
+	
+	GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle);
 	CurrentHealth = WholeHearts + NewFragment;
+	if (DamageType == EDamageType::Fall)
+	{
+		bIsInvincible = true;
+		OnRep_Invincible();
+	}
 	OnRep_Health(); // Update Server UI manually
 }
 
@@ -68,5 +75,21 @@ void UHealthComponent::OnRep_Health()
 		AArcadeGameMode* GM = GetWorld()->GetAuthGameMode<AArcadeGameMode>();
 		if (GM) GM->GameOver();
 	}
+}
+
+void UHealthComponent::OnRep_Invincible()
+{
+	GetWorld()->GetTimerManager().SetTimer(
+	TimerHandle,                
+	this,                       
+	&UHealthComponent::InvincibleTimer,
+	InvincibleResetTimer,                        
+	false,                       
+	-1.0);
+}
+
+void UHealthComponent::InvincibleTimer()
+{
+	bIsInvincible = false;
 }
 

@@ -45,6 +45,6 @@ void AKillZone::OnColliderOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	if (MyCharacter) MyCharacter -> RespawnPlayer();
 
 	UHealthComponent* HealthComp = OtherActor -> FindComponentByClass<UHealthComponent>();
-	if (HealthComp) HealthComp -> TakeDamage(1.0f);
+	if (HealthComp) HealthComp -> TakeDamage(1.0f, EDamageType::Fall);
 }
 
