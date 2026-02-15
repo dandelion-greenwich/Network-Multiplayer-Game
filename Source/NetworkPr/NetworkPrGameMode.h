@@ -14,6 +14,9 @@ class ANetworkPrGameMode : public AGameModeBase
 
 public:
 	ANetworkPrGameMode();
+	virtual void BeginPlay() override;
+
+	void AddSecondLocalPlayer();
 
 };
 

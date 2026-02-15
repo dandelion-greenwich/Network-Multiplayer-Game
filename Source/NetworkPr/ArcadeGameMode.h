@@ -14,8 +14,11 @@ class NETWORKPR_API AArcadeGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	virtual void BeginPlay() override;
 	virtual void OnPostLogin(AController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
+
+	void AddSecondLocalPlayer();
 	void TryToStartMatch();
 	void GameOver();
 

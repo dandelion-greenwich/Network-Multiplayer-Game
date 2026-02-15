@@ -4,6 +4,7 @@
 #include "ArcadeGameMode.h"
 
 #include "MultiplayerSubsystem.h"
+#include "NetworkPrGameInstance.h"
 #include "NetworkPrGameState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -37,6 +38,20 @@ void AArcadeGameMode::Logout(AController* Exiting)
 		Subsystem -> SessionInterface->DestroySession(SessionName);
 		GetWorld()->ServerTravel("/Game/Scenes/MainMenu");
 	}
+}
+
+void AArcadeGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	UNetworkPrGameInstance* GI = Cast<UNetworkPrGameInstance>(GetGameInstance());
+	if (GI && GI->CurrentGameMode == EGameSessionMode::LocalCoop)
+		AddSecondLocalPlayer();
+}
+
+void AArcadeGameMode::AddSecondLocalPlayer()
+{
+	UGameplayStatics::CreatePlayer(GetWorld(), -1, true);
 }
 
 void AArcadeGameMode::TryToStartMatch()
