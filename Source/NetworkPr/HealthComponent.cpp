@@ -2,8 +2,8 @@
 
 
 #include "HealthComponent.h"
-
 #include "ArcadeGameMode.h"
+#include "NetworkPrCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 

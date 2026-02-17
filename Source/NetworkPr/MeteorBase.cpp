@@ -4,6 +4,7 @@
 #include "MeteorBase.h"
 
 #include "HealthComponent.h"
+#include "NetworkPrCharacter.h"
 #include "Engine/OverlapResult.h"
 
 
@@ -101,14 +102,14 @@ void AMeteorBase::ServerRPC_Explosion_Implementation()
 			UE_LOG(LogTemp, Warning, TEXT("Explosion Hit actor: %s"), *HitActor->GetActorNameOrLabel());
 			if (!HitActor || !HitActor -> ActorHasTag("Player")) continue; // Go to the next iteration of for loop if HitActor is a wall for instance
 
-			UHealthComponent* HealthComp = HitActor -> FindComponentByClass<UHealthComponent>();
-			if (!HealthComp) continue;
+			ANetworkPrCharacter* Character = Cast<ANetworkPrCharacter>(HitActor);
+			if (!Character || !Character -> HealthComp) continue;
 			float DistanceDifference = FVector::Dist(StartVector, HitActor->GetActorLocation());
 
 			if (DistanceDifference > AttackSphereRadius / 2)
-				HealthComp -> TakeDamage(0.25f, EDamageType::Explosion);
+				Character -> HealthComp -> TakeDamage(0.25f, EDamageType::Explosion);
 			else
-				HealthComp -> TakeDamage(0.5f, EDamageType::Explosion);
+				Character -> HealthComp -> TakeDamage(0.5f, EDamageType::Explosion);
 		}
 	}
 	

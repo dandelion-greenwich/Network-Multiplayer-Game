@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "NetworkPrCharacter.h"
+
+#include "ArcadeGameMode.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -73,6 +75,8 @@ void ANetworkPrCharacter::BeginPlay()
 			GS->RegisterPlayer(this);
 		}
 	}
+	
+	this->HealthComp->OnHealthChanged.AddDynamic(this, &ANetworkPrCharacter::ShakeCamera);
 }
 
 void ANetworkPrCharacter::PrintString(const FString& String) 
@@ -109,6 +113,19 @@ void ANetworkPrCharacter::SetCamera()
 	}
 
 	GetWorldTimerManager().ClearTimer(TimerHandle);
+}
+
+void ANetworkPrCharacter::ShakeCamera(AActor* Player, float NewHealth) // Those parameters are only for widget, not this class 
+{
+	if (IsPlayerControlled()) 
+	{
+		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+		if (PC && PC->PlayerCameraManager)
+		{
+			PC->PlayerCameraManager->StartCameraShake(CameraShakeClass, 1.0f);
+		}
+	}
 }
 
 void ANetworkPrCharacter::ClientRPC_SetCamera_Implementation(AActor* NewCamera)

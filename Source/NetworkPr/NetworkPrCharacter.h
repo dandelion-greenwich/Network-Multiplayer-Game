@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NiagaraSystem.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Camera/CameraShakeBase.h"
 #include "NetworkPrCharacter.generated.h"
 
 class USpringArmComponent;
@@ -43,6 +43,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	void SetCamera();
+	UFUNCTION()
+	void ShakeCamera(AActor* Player, float NewHealth);
 	void PrintString(const FString& String); // Faster debugging
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_SetCamera(AActor* NewCamera);
@@ -60,6 +62,8 @@ public:
 	bool CanPush;
 	UPROPERTY(EditAnywhere)
 	float PushResetTime;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
 protected:
 

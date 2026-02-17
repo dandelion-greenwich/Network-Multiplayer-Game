@@ -21,7 +21,6 @@ void ANetworkPrGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, "GAAAAY");
 	UNetworkPrGameInstance* GI = Cast<UNetworkPrGameInstance>(GetGameInstance());
 	if (GI && GI->CurrentGameMode == EGameSessionMode::LocalCoop)
 		AddSecondLocalPlayer();
