@@ -43,8 +43,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 	void SetCamera();
-	UFUNCTION()
-	void ShakeCamera(AActor* Player, float NewHealth);
+	UFUNCTION(Client, Unreliable)
+	void ClientRpc_ShakeCamera();
 	void PrintString(const FString& String); // Faster debugging
 	UFUNCTION(Client, Reliable)
 	void ClientRPC_SetCamera(AActor* NewCamera);

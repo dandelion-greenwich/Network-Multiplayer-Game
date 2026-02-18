@@ -100,16 +100,17 @@ void AMeteorBase::ServerRPC_Explosion_Implementation()
 		{
 			AActor* HitActor = OverlapResult.GetActor();
 			UE_LOG(LogTemp, Warning, TEXT("Explosion Hit actor: %s"), *HitActor->GetActorNameOrLabel());
-			if (!HitActor || !HitActor -> ActorHasTag("Player")) continue; // Go to the next iteration of for loop if HitActor is a wall for instance
+			if (!HitActor || !HitActor -> ActorHasTag("Player")) continue; // Go to the next index of for loop if HitActor is not a player
 
-			ANetworkPrCharacter* Character = Cast<ANetworkPrCharacter>(HitActor);
-			if (!Character || !Character -> HealthComp) continue;
+			ANetworkPrCharacter* Player = Cast<ANetworkPrCharacter>(HitActor);
+			if (!Player || !Player -> HealthComp) continue;
+			Player -> ClientRpc_ShakeCamera();
 			float DistanceDifference = FVector::Dist(StartVector, HitActor->GetActorLocation());
 
 			if (DistanceDifference > AttackSphereRadius / 2)
-				Character -> HealthComp -> TakeDamage(0.25f, EDamageType::Explosion);
+				Player -> HealthComp -> TakeDamage(0.5f, EDamageType::Explosion);
 			else
-				Character -> HealthComp -> TakeDamage(0.5f, EDamageType::Explosion);
+				Player -> HealthComp -> TakeDamage(1.f, EDamageType::Explosion);
 		}
 	}
 	

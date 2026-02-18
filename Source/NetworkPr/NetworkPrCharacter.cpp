@@ -2,20 +2,14 @@
 
 #include "NetworkPrCharacter.h"
 
-#include "ArcadeGameMode.h"
 #include "Engine/LocalPlayer.h"
-#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "NiagaraFunctionLibrary.h"
-#include "Net/UnrealNetwork.h"
 #include "Engine/StaticMesh.h"
-#include "Engine/StaticMeshActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "HealthComponent.h"
 #include "NetworkPrGameState.h"
@@ -75,8 +69,6 @@ void ANetworkPrCharacter::BeginPlay()
 			GS->RegisterPlayer(this);
 		}
 	}
-	
-	this->HealthComp->OnHealthChanged.AddDynamic(this, &ANetworkPrCharacter::ShakeCamera);
 }
 
 void ANetworkPrCharacter::PrintString(const FString& String) 
@@ -115,7 +107,7 @@ void ANetworkPrCharacter::SetCamera()
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 }
 
-void ANetworkPrCharacter::ShakeCamera(AActor* Player, float NewHealth) // Those parameters are only for widget, not this class 
+void ANetworkPrCharacter::ClientRpc_ShakeCamera_Implementation()
 {
 	if (IsPlayerControlled()) 
 	{
