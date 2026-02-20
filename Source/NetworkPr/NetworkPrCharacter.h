@@ -52,22 +52,29 @@ public:
 	void ResetPush();
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastPushVFX();
+	UFUNCTION(NetMulticast, Unreliable)
+	void SetHitMaterial();
+	UFUNCTION(NetMulticast, Unreliable)
+	void SetDefaultMaterial();
 
 	FTimerHandle TimerHandle; // Timer for PC to load
-	UPROPERTY(BlueprintReadWrite, Category = "C++")
+	UPROPERTY(BlueprintReadWrite, Category = "Class")
 	float AttackSphereRadius;
-	UPROPERTY(VisibleAnywhere, Category = "C++")
+	UPROPERTY(VisibleAnywhere, Category = "Class")
 	class UHealthComponent* HealthComp;
 	FVector RespawnPos;
 	bool CanPush;
-	UPROPERTY(EditAnywhere, Category = "C++")
+	UPROPERTY(EditAnywhere, Category = "Class")
 	float PushResetTime;
-	UPROPERTY(EditAnywhere, Category = "C++")
+	UPROPERTY(EditAnywhere, Category = "Class")
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
-	UPROPERTY(EditAnywhere, Category = "C++")
+	UPROPERTY(EditAnywhere, Category = "Class")
 	UAnimMontage* AttackMontage;
-	UPROPERTY(EditAnywhere, Category = "C++")
+	UPROPERTY(EditAnywhere, Category = "Class")
 	UNiagaraComponent* PushEffect;
+	UPROPERTY(EditAnywhere, Category = "Class")
+	UMaterialInterface* HitMaterial;
+	UMaterialInterface* DefaultMaterial;
 
 protected:
 	void Move(const FInputActionValue& Value);

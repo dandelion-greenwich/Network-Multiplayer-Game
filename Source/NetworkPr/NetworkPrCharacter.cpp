@@ -67,6 +67,8 @@ void ANetworkPrCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	RespawnPos = GetActorLocation();
+	DefaultMaterial = GetMesh() -> GetMaterial(0);
+	
 	if (HasAuthority())
 	{
 		ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
@@ -204,6 +206,19 @@ void ANetworkPrCharacter::ResetPush()
 {
 	CanPush = true;
 }
+
+void ANetworkPrCharacter::SetDefaultMaterial_Implementation()
+{
+	if (DefaultMaterial && GetMesh())
+		GetMesh()->SetMaterial(0, DefaultMaterial);
+}
+
+void ANetworkPrCharacter::SetHitMaterial_Implementation()
+{
+	if (HitMaterial && GetMesh())
+		GetMesh()->SetMaterial(0, HitMaterial);
+}
+
 
 void ANetworkPrCharacter::MulticastPushVFX_Implementation()
 {
