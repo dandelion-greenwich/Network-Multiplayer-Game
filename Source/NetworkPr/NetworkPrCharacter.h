@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "Camera/CameraShakeBase.h"
@@ -21,19 +23,15 @@ class ANetworkPrCharacter : public ACharacter
 {
 	GENERATED_BODY()
 	
-	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 
-	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* JumpAction;
 
-	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
-	/** ServerRPC_Attack Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* AttackAction;
 
@@ -52,29 +50,36 @@ public:
 	void ServerRPC_Attack();
 	void RespawnPlayer();
 	void ResetPush();
-	
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPushVFX();
+	UFUNCTION(NetMulticast, Unreliable)
+	void SetHitMaterial();
+	UFUNCTION(NetMulticast, Unreliable)
+	void SetDefaultMaterial();
+
 	FTimerHandle TimerHandle; // Timer for PC to load
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = "Class")
 	float AttackSphereRadius;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Class")
 	class UHealthComponent* HealthComp;
 	FVector RespawnPos;
 	bool CanPush;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Class")
 	float PushResetTime;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Class")
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
+	UPROPERTY(EditAnywhere, Category = "Class")
+	UAnimMontage* AttackMontage;
+	UPROPERTY(EditAnywhere, Category = "Class")
+	UNiagaraComponent* PushEffect;
+	UPROPERTY(EditAnywhere, Category = "Class")
+	UMaterialInterface* HitMaterial;
+	UMaterialInterface* DefaultMaterial;
 
 protected:
-
-	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
-	
 	virtual void NotifyControllerChanged() override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };
 

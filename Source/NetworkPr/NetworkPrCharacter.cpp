@@ -14,6 +14,7 @@
 #include "HealthComponent.h"
 #include "NetworkPrGameState.h"
 
+
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
@@ -41,7 +42,12 @@ ANetworkPrCharacter::ANetworkPrCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
+	/*Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;*/
 	
+	PushEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("PushEffect"));
+	PushEffect->SetupAttachment(RootComponent);
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -59,8 +65,10 @@ void ANetworkPrCharacter::Tick(float DeltaSeconds)
 void ANetworkPrCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	RespawnPos = GetActorLocation();
+	DefaultMaterial = GetMesh() -> GetMaterial(0);
+	
 	if (HasAuthority())
 	{
 		ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
@@ -137,6 +145,8 @@ void ANetworkPrCharacter::ServerRPC_Attack_Implementation()
 	if (!CanPush) return;
 	CanPush = false;
 
+	MulticastPushVFX();
+	
 	GetWorld()->GetTimerManager().SetTimer(
 	TimerHandle,                
 	this,                       
@@ -195,6 +205,30 @@ void ANetworkPrCharacter::RespawnPlayer()
 void ANetworkPrCharacter::ResetPush()
 {
 	CanPush = true;
+}
+
+void ANetworkPrCharacter::SetDefaultMaterial_Implementation()
+{
+	if (DefaultMaterial && GetMesh())
+		GetMesh()->SetMaterial(0, DefaultMaterial);
+}
+
+void ANetworkPrCharacter::SetHitMaterial_Implementation()
+{
+	if (HitMaterial && GetMesh())
+		GetMesh()->SetMaterial(0, HitMaterial);
+}
+
+
+void ANetworkPrCharacter::MulticastPushVFX_Implementation()
+{
+	if (AttackMontage) PlayAnimMontage(AttackMontage);
+
+	if (PushEffect)
+	{
+		PushEffect -> Deactivate();
+		PushEffect -> Activate();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

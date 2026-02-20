@@ -103,7 +103,7 @@ void AMeteorBase::ServerRPC_Explosion_Implementation()
 			if (!HitActor || !HitActor -> ActorHasTag("Player")) continue; // Go to the next index of for loop if HitActor is not a player
 
 			ANetworkPrCharacter* Player = Cast<ANetworkPrCharacter>(HitActor);
-			if (!Player || !Player -> HealthComp) continue;
+			if (!Player || !Player -> HealthComp || Player -> HealthComp -> bIsInvincible) continue;
 			Player -> ClientRpc_ShakeCamera();
 			float DistanceDifference = FVector::Dist(StartVector, HitActor->GetActorLocation());
 

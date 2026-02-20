@@ -56,6 +56,8 @@ void UHealthComponent::TakeDamage(float DamageAmount, EDamageType DamageType)
 	{
 		bIsInvincible = true;
 		OnRep_Invincible();
+		ANetworkPrCharacter* Player = Cast<ANetworkPrCharacter>(GetOwner());
+		if (Player) Player -> SetHitMaterial();
 	}
 	OnRep_Health(); // Update Server UI manually
 }
@@ -91,5 +93,7 @@ void UHealthComponent::OnRep_Invincible()
 void UHealthComponent::InvincibleTimer()
 {
 	bIsInvincible = false;
+	ANetworkPrCharacter* Player = Cast<ANetworkPrCharacter>(GetOwner());
+	if (Player) Player -> SetDefaultMaterial();
 }
 
