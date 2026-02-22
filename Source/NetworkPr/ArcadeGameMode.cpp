@@ -2,7 +2,6 @@
 
 
 #include "ArcadeGameMode.h"
-
 #include "MultiplayerSubsystem.h"
 #include "NetworkPrGameInstance.h"
 #include "NetworkPrGameState.h"
@@ -59,16 +58,32 @@ void AArcadeGameMode::TryToStartMatch()
 	ANetworkPrGameState* GS = GetGameState<ANetworkPrGameState>();
     
 	if (GS && GS->Player1 && GS->Player2)
+	{
 		OnStartMatch.Broadcast();
+		GS -> Multicast_Play();
+	}
+	else if (GS && GS->Player1 && !GS->Player2)
+	{
+		GS -> Multicast_Wait();
+	}
+}
+
+void AArcadeGameMode::WaitForTheSecondPlayer()
+{
+	ANetworkPrGameState* GS = GetGameState<ANetworkPrGameState>();
+	if (GS) GS->Multicast_Wait();
+}
+
+void AArcadeGameMode::ContinueGame()
+{
+	ANetworkPrGameState* GS = GetGameState<ANetworkPrGameState>();
+	if (GS) GS->Multicast_Play();
 }
 
 void AArcadeGameMode::GameOver()
 {
 	ANetworkPrGameState* GS = GetGameState<ANetworkPrGameState>();
-	if (GS)
-	{
-		GS->Multicast_GameOver();
-	}
+	if (GS) GS->Multicast_GameOver();
 }
 
 

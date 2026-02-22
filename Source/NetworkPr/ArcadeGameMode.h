@@ -20,9 +20,10 @@ public:
 
 	void AddSecondLocalPlayer();
 	void TryToStartMatch();
+	void WaitForTheSecondPlayer();
+	void ContinueGame();
 	void GameOver();
 
 	FTimerHandle TimerHandle;
-
 	FOnStartMatch OnStartMatch;
 };

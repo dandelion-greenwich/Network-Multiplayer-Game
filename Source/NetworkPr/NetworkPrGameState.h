@@ -7,9 +7,15 @@
 #include "NetworkPrCharacter.h"
 #include "NetworkPrGameState.generated.h"
 
-/**
- * 
- */
+UENUM()
+enum class EGameState : uint8
+{
+	Waiting,
+	Playing,
+	Paused,
+	GameOver
+};
+
 UCLASS()
 class NETWORKPR_API ANetworkPrGameState : public AGameStateBase
 {
@@ -18,18 +24,23 @@ class NETWORKPR_API ANetworkPrGameState : public AGameStateBase
 public:
 
 	FTimerHandle TimerHandle;
-
+	UPROPERTY(Replicated)
+	EGameState CurrentGameState;
 	UPROPERTY(Replicated)
 	ANetworkPrCharacter* Player1;
 	UPROPERTY(Replicated)
 	ANetworkPrCharacter* Player2;
-
+	
 	// Helper to register players (server only)
 	void RegisterPlayer(ANetworkPrCharacter* NewPlayer);
 	void TimerToLoadPCToRemoveWaitingUI();
 	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Wait();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_Play();
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_GameOver();
 	void GameOverTimer();
-
+	void SetFreezeTime(bool bFreeze);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
