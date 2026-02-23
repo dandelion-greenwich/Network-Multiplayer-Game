@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "GameFramework/Actor.h"
 #include "MeteorBase.generated.h"
 
@@ -24,12 +25,15 @@ public:
 	class USceneComponent* RootComp;
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* MeteorComp;
+	FVector SpawnedLocation;
 
 	// Supportive variables
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> MeteorClass;
 	float AttackSphereRadius;
 	AActor* PreviewActorToDestroy;
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* ExplosionEffect;
 	
 	UFUNCTION()
 	void OnMeteorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

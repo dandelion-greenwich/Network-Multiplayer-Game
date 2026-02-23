@@ -5,6 +5,7 @@
 
 #include "HealthComponent.h"
 #include "NetworkPrCharacter.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Engine/OverlapResult.h"
 
 
@@ -62,7 +63,7 @@ void AMeteorBase::BeginPlay()
 		{
 			FActorSpawnParameters SpawnParameters;
 			SpawnParameters.Owner = this;
-			FVector SpawnedLocation = HitResult.Location;
+			SpawnedLocation = HitResult.Location;
 			PreviewActorToDestroy = GetWorld()->SpawnActor<AActor>(MeteorClass, SpawnedLocation, FRotator::ZeroRotator, SpawnParameters);
 			break;
 		}
@@ -116,6 +117,17 @@ void AMeteorBase::ServerRPC_Explosion_Implementation()
 	
 	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Orange, false, 2.0f);
 	if (PreviewActorToDestroy != nullptr) PreviewActorToDestroy -> Destroy();
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			ExplosionEffect,
+			SpawnedLocation,
+			GetActorRotation(),
+			FVector(0.75f),      
+			true,               
+			true,               
+			ENCPoolMethod::None 
+		);
+	
 	Destroy();
 }
 
