@@ -69,14 +69,18 @@ void ANetworkPrCharacter::BeginPlay()
 	RespawnPos = GetActorLocation();
 	DefaultMaterial = GetMesh() -> GetMaterial(0);
 	
-	if (HasAuthority())
-	{
-		ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
-		if (GS)
-		{
-			GS->RegisterPlayer(this);
-		}
-	}
+	if (!HasAuthority()) return;
+	
+	ANetworkPrGameState* GS = GetWorld()->GetGameState<ANetworkPrGameState>();
+	if (!GS) return;
+	GS->RegisterPlayer(this);
+	
+	if (this == GS -> Player1 && Player1Material)
+		DefaultMaterial = Player1Material;
+	else if (this == GS -> Player2 && Player2Material)
+		DefaultMaterial = Player2Material;
+	
+	SetDefaultMaterial();
 }
 
 void ANetworkPrCharacter::PrintString(const FString& String) 

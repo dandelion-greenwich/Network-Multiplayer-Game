@@ -74,6 +74,10 @@ public:
 	UNiagaraComponent* PushEffect;
 	UPROPERTY(EditAnywhere, Category = "Class")
 	UMaterialInterface* HitMaterial;
+	UPROPERTY(EditAnywhere, Category = "Class")
+	UMaterialInterface* Player1Material;
+	UPROPERTY(EditAnywhere, Category = "Class")
+	UMaterialInterface* Player2Material;
 	UMaterialInterface* DefaultMaterial;
 
 protected:
