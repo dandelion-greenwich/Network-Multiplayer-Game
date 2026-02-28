@@ -15,7 +15,7 @@ void AArcadeGameMode::OnPostLogin(AController* NewPlayer)
 	TimerHandle,
 	this,
 	&AArcadeGameMode::TryToStartMatch,
-	1.0,false);
+	0.5,false);
 }
 
 void AArcadeGameMode::Logout(AController* Exiting)
@@ -50,7 +50,7 @@ void AArcadeGameMode::BeginPlay()
 
 void AArcadeGameMode::AddSecondLocalPlayer()
 {
-	UGameplayStatics::CreatePlayer(GetWorld(), -1, true);
+	UGameplayStatics::CreatePlayer(GetWorld(), 1, true);
 }
 
 void AArcadeGameMode::TryToStartMatch()

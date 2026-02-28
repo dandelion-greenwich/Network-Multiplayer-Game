@@ -70,6 +70,15 @@ void ANetworkPrGameState::Multicast_Play_Implementation()
 {
 	CurrentGameState = EGameState::Playing;
 	SetFreezeTime(false);
+
+	if (Player1 && Player2)
+	{
+		Player1 -> DefaultMaterial = Player1 -> Player1Material;
+		Player1 -> SetDefaultMaterial();
+
+		Player2 -> DefaultMaterial = Player2 ->Player2Material;
+		Player2 -> SetDefaultMaterial();
+	}
 }
 
 void ANetworkPrGameState::Multicast_GameOver_Implementation()
