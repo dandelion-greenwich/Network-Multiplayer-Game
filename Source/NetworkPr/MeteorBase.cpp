@@ -117,17 +117,22 @@ void AMeteorBase::ServerRPC_Explosion_Implementation()
 	
 	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Orange, false, 2.0f);
 	if (PreviewActorToDestroy != nullptr) PreviewActorToDestroy -> Destroy();
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			ExplosionEffect,
-			SpawnedLocation,
-			GetActorRotation(),
-			FVector(0.75f),      
-			true,               
-			true,               
-			ENCPoolMethod::None 
-		);
+	Multicast_ExplosionVFX();
 	
 	Destroy();
+}
+
+void AMeteorBase::Multicast_ExplosionVFX_Implementation()
+{
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(),
+		ExplosionEffect,
+		SpawnedLocation,
+		GetActorRotation(),
+		FVector(0.75f),      
+		true,               
+		true,               
+		ENCPoolMethod::None 
+	);
 }
 
