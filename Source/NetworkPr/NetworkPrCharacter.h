@@ -56,6 +56,8 @@ public:
 	void SetHitMaterial();
 	UFUNCTION(NetMulticast, Unreliable)
 	void SetDefaultMaterial();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_LogEvent(EGameEventType GameType, const FString& PlayerNumber, FVector Location, const FString& ExtraData);
 
 	FTimerHandle TimerHandle; // Timer for PC to load
 	UPROPERTY(BlueprintReadWrite, Category = "Class")

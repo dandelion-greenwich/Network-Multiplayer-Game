@@ -12,6 +12,7 @@
 #include "Engine/StaticMesh.h"
 #include "Kismet/GameplayStatics.h"
 #include "HealthComponent.h"
+#include "MultiplayerSubsystem.h"
 #include "NetworkPrGameState.h"
 
 
@@ -209,6 +210,15 @@ void ANetworkPrCharacter::RespawnPlayer()
 void ANetworkPrCharacter::ResetPush()
 {
 	CanPush = true;
+}
+
+void ANetworkPrCharacter::ServerRPC_LogEvent_Implementation(EGameEventType GameType, const FString& PlayerNumber, FVector Location, const FString& ExtraData)
+{
+	float GameTime = GetWorld()->GetTimeSeconds();
+	
+	UMultiplayerSubsystem* MultiplayerSubsystem = GetGameInstance()->GetSubsystem<UMultiplayerSubsystem>();
+	if (MultiplayerSubsystem)
+		MultiplayerSubsystem -> LogEvent(GameTime, GameType, PlayerNumber, Location, ExtraData);
 }
 
 void ANetworkPrCharacter::SetDefaultMaterial_Implementation()

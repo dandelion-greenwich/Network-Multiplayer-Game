@@ -259,3 +259,55 @@ void UMultiplayerSubsystem::OnJoinSessionsComplete(FName SessionName, EOnJoinSes
           LexToString(Result)));
     }
 }
+
+void UMultiplayerSubsystem::LogEvent(float CurrentTime, EGameEventType Type, FString Instigator, FVector Location,
+   FString ExtraData)
+{
+   FGameEventLog NewEvent;
+   NewEvent.Timestamp = CurrentTime;
+   NewEvent.EventType = Type;
+   NewEvent.Instigator = Instigator;
+   NewEvent.Location = Location;
+   NewEvent.AdditionalData = ExtraData;
+
+   MatchEvents.Add(NewEvent);
+}
+
+void UMultiplayerSubsystem::ExportToCSV(FString MatchID)
+{
+   if (MatchEvents.IsEmpty()) return;
+
+   // Create the CSV Header
+   FString CSVContent = TEXT("Timestamp,EventType,Instigator,LocationX,LocationY,LocationZ,AdditionalData\n");
+
+   // Loop through all events and format them
+   const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EGameEventType"), true);
+
+   for (const FGameEventLog& Event : MatchEvents)
+   {
+      // Convert Enum to String
+      FString EventName = EnumPtr ? EnumPtr->GetNameStringByValue(static_cast<int64>(Event.EventType)) : TEXT("Unknown");
+
+      // Format the row
+      FString Row = FString::Printf(TEXT("%f,%s,%s,%f,%f,%f,%s\n"),
+          Event.Timestamp,
+          *EventName,
+          *Event.Instigator,
+          Event.Location.X,
+          Event.Location.Y,
+          Event.Location.Z,
+          *Event.AdditionalData
+      );
+
+      CSVContent += Row;
+   }
+
+   // Define the file path (Saves to NetworkPr/Saved/Analytics/)
+   FString Directory = FPaths::ProjectSavedDir() / TEXT("Analytics");
+   FString FilePath = Directory / FString::Printf(TEXT("MatchData_%s.csv"), *MatchID);
+
+   // Write the file to disk
+   FFileHelper::SaveStringToFile(CSVContent, *FilePath);
+   
+   MatchEvents.Empty();
+}
