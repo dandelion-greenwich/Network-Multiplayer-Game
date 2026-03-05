@@ -61,6 +61,27 @@ void AArcadeGameMode::TryToStartMatch()
 	{
 		OnStartMatch.Broadcast();
 		GS -> Multicast_Play();
+
+		// Logging Game Start
+		float GameTime = GetWorld()->GetTimeSeconds();
+		UMultiplayerSubsystem* MultiplayerSubsystem = GetGameInstance()->GetSubsystem<UMultiplayerSubsystem>();
+		if (!MultiplayerSubsystem) return;
+
+
+		FString GameMode;
+		UNetworkPrGameInstance* GI = Cast<UNetworkPrGameInstance>(GetGameInstance());
+		if (!GI) return;
+		switch (GI -> CurrentGameMode)
+		{
+		case EGameSessionMode::LocalCoop:
+			GameMode = FString::Printf(TEXT("Local Coop"));
+			break;
+		case EGameSessionMode::NetworkCoop:
+			GameMode = FString::Printf(TEXT("Network Coop"));
+			break;	
+		}
+		
+		MultiplayerSubsystem -> LogEvent(GameTime, EGameEventType::MatchStart, "", FVector::ZeroVector, GameMode);
 	}
 	else if (GS && GS->Player1 && !GS->Player2)
 	{
@@ -80,10 +101,28 @@ void AArcadeGameMode::ContinueGame()
 	if (GS) GS->Multicast_Play();
 }
 
-void AArcadeGameMode::GameOver()
+void AArcadeGameMode::GameOver(AActor* DeadPlayer)
 {
 	ANetworkPrGameState* GS = GetGameState<ANetworkPrGameState>();
 	if (GS) GS->Multicast_GameOver();
+
+	// Logging Game End
+	UMultiplayerSubsystem* MultiplayerSubsystem = GetGameInstance()->GetSubsystem<UMultiplayerSubsystem>();
+	if (MultiplayerSubsystem)
+	{
+		float GameTime = GetWorld()->GetTimeSeconds();
+		FString WinningPlayer;
+		if (DeadPlayer ==  GS ->Player1)
+			WinningPlayer = FString("Player2 Win");
+		else if (DeadPlayer ==  GS ->Player2)
+			WinningPlayer = FString("Player1 Win");
+		
+		MultiplayerSubsystem -> LogEvent(GameTime, EGameEventType::MatchEnd, "", FVector::ZeroVector, WinningPlayer);
+		
+		FString MatchID = FDateTime::Now().ToString(TEXT("%d%m%Y_%H%M%S"));
+		MultiplayerSubsystem -> ExportToCSV(MatchID);
+	}
+	
 }
 
 

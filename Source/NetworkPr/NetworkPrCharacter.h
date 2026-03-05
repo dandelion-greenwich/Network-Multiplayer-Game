@@ -51,11 +51,11 @@ public:
 	void RespawnPlayer();
 	void ResetPush();
 	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastPushVFX();
+	void Multicast_PushVFX();
 	UFUNCTION(NetMulticast, Unreliable)
-	void SetHitMaterial();
+	void Multicast_SetHitMaterial();
 	UFUNCTION(NetMulticast, Unreliable)
-	void SetDefaultMaterial();
+	void Multicast_SetDefaultMaterial();
 	UFUNCTION(Server, Reliable)
 	void ServerRPC_LogEvent(EGameEventType GameType, const FString& PlayerNumber, FVector Location, const FString& ExtraData);
 

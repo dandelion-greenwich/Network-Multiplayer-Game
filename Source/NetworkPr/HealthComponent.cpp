@@ -3,7 +3,9 @@
 
 #include "HealthComponent.h"
 #include "ArcadeGameMode.h"
+#include "GameEventLog.h"
 #include "NetworkPrCharacter.h"
+#include "NetworkPrGameState.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -52,12 +54,13 @@ void UHealthComponent::TakeDamage(float DamageAmount, EDamageType DamageType)
 	
 	GetOwner()->GetWorldTimerManager().ClearTimer(TimerHandle);
 	CurrentHealth = WholeHearts + NewFragment;
+	ANetworkPrCharacter* Player = Cast<ANetworkPrCharacter>(GetOwner());
+	
 	if (DamageType == EDamageType::Fall)
 	{
 		bIsInvincible = true;
 		OnRep_Invincible();
-		ANetworkPrCharacter* Player = Cast<ANetworkPrCharacter>(GetOwner());
-		if (Player) Player -> SetHitMaterial();
+		if (Player) Player -> Multicast_SetHitMaterial();
 	}
 	OnRep_Health(); // Update Server UI manually
 }
@@ -73,9 +76,10 @@ void UHealthComponent::OnRep_Health()
 	OnHealthChanged.Broadcast(GetOwner(), CurrentHealth);
 	if (CurrentHealth <= 0.0f)
 	{
-		OnDeath.Broadcast(GetOwner());
+		AActor* Owner = GetOwner();
+		OnDeath.Broadcast(Owner);
 		AArcadeGameMode* GM = GetWorld()->GetAuthGameMode<AArcadeGameMode>();
-		if (GM) GM->GameOver();
+		if (GM) GM->GameOver(Owner);
 	}
 }
 
@@ -94,6 +98,6 @@ void UHealthComponent::InvincibleTimer()
 {
 	bIsInvincible = false;
 	ANetworkPrCharacter* Player = Cast<ANetworkPrCharacter>(GetOwner());
-	if (Player) Player -> SetDefaultMaterial();
+	if (Player) Player -> Multicast_SetDefaultMaterial();
 }
 

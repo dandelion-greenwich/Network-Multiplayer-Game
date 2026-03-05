@@ -74,10 +74,10 @@ void ANetworkPrGameState::Multicast_Play_Implementation()
 	if (Player1 && Player2)
 	{
 		Player1 -> DefaultMaterial = Player1 -> Player1Material;
-		Player1 -> SetDefaultMaterial();
+		Player1 -> Multicast_SetDefaultMaterial();
 
 		Player2 -> DefaultMaterial = Player2 ->Player2Material;
-		Player2 -> SetDefaultMaterial();
+		Player2 -> Multicast_SetDefaultMaterial();
 	}
 }
 

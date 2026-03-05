@@ -22,7 +22,7 @@ public:
 	void TryToStartMatch();
 	void WaitForTheSecondPlayer();
 	void ContinueGame();
-	void GameOver();
+	void GameOver(AActor* DeadPlayer);
 
 	FTimerHandle TimerHandle;
 	FOnStartMatch OnStartMatch;

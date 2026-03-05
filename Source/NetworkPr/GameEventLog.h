@@ -9,7 +9,8 @@ enum class EGameEventType : uint8
 {
     MatchStart,
     PlayerJump,
-    PlayerPush,
+    PlayerPushAttempt,
+    PlayerPushSuccess,
     BeenPushedRecently,
     DamageTaken,
     MatchEnd

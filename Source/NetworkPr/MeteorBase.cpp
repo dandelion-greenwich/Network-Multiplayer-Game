@@ -3,6 +3,7 @@
 
 #include "MeteorBase.h"
 
+#include "GameEventLog.h"
 #include "HealthComponent.h"
 #include "NetworkPrCharacter.h"
 #include "NiagaraFunctionLibrary.h"
@@ -43,7 +44,7 @@ void AMeteorBase::BeginPlay()
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 3, 0, 1);
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 3, 0, 1);
 
 	bool hasHit = GetWorld()->LineTraceMultiByChannel(
 		HitResults,
@@ -109,13 +110,21 @@ void AMeteorBase::ServerRPC_Explosion_Implementation()
 			float DistanceDifference = FVector::Dist(StartVector, HitActor->GetActorLocation());
 
 			if (DistanceDifference > AttackSphereRadius / 2)
+			{
 				Player -> HealthComp -> TakeDamage(0.5f, EDamageType::Explosion);
+				// Logging event for playtesting session, will be removed afterwards
+				Player -> ServerRPC_LogEvent(EGameEventType::DamageTaken, "Player1", FVector::ZeroVector, "Explosion: 0.5");
+			}
 			else
+			{
 				Player -> HealthComp -> TakeDamage(1.f, EDamageType::Explosion);
+				// Logging event for playtesting session, will be removed afterwards
+				Player -> ServerRPC_LogEvent(EGameEventType::DamageTaken, "Player1", FVector::ZeroVector, "Explosion: 1");
+			}
 		}
 	}
 	
-	DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Orange, false, 2.0f);
+	//DrawDebugSphere(GetWorld(), StartVector, AttackSphereRadius, 10.f, FColor::Orange, false, 2.0f);
 	if (PreviewActorToDestroy != nullptr) PreviewActorToDestroy -> Destroy();
 	Multicast_ExplosionVFX();
 	

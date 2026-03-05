@@ -260,8 +260,8 @@ void UMultiplayerSubsystem::OnJoinSessionsComplete(FName SessionName, EOnJoinSes
     }
 }
 
-void UMultiplayerSubsystem::LogEvent(float CurrentTime, EGameEventType Type, FString Instigator, FVector Location,
-   FString ExtraData)
+void UMultiplayerSubsystem::LogEvent(float CurrentTime, EGameEventType Type,
+   FString Instigator, FVector Location, FString ExtraData)
 {
    FGameEventLog NewEvent;
    NewEvent.Timestamp = CurrentTime;
