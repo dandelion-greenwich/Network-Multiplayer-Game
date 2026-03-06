@@ -2,10 +2,7 @@
 
 
 #include "PlayerUI.h"
-#include "NetworkPrCharacter.h"
-#include "HealthComponent.h"
 #include "NetworkPrGameState.h"
-#include "GameFramework/GameSession.h"
 
 void UPlayerUI::UpdateHealth(AActor* Player, float NewHealth)
 {
@@ -14,17 +11,13 @@ void UPlayerUI::UpdateHealth(AActor* Player, float NewHealth)
 
     if (Player == GS->Player1)
     {
-        FText Player1HealthText = FText::Format(
-    FText::FromString("Player 1 Hearts: {0}"), FText::AsNumber(NewHealth));
-        
-        if (Player1Health) Player1Health->SetText(Player1HealthText);
+        float NewPercent = NewHealth / 6.f;
+        if (Player1HealthBar) Player1HealthBar -> SetPercent(NewPercent);
     }
     else if (Player == GS->Player2)
     {
-        FText Player2HealthText = FText::Format(
-            FText::FromString("Player 2 Hearts: {0}"), FText::AsNumber(NewHealth));
-
-        if (Player2Health) Player2Health->SetText(Player2HealthText);
+        float NewPercent = NewHealth / 6.f;
+        if (Player2HealthBar) Player2HealthBar -> SetPercent(NewPercent);
     }
 }
 
@@ -42,5 +35,4 @@ void UPlayerUI::SetGameOverText(AActor* DeadPlayer)
         GameOverText->SetText(FText::FromString("Player 2 win!!!"));
     else if (DeadPlayer == GS->Player2)
         GameOverText->SetText(FText::FromString("Player 1 win!!!"));
-
 }
